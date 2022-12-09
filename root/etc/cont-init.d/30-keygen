@@ -5,26 +5,6 @@ if [[ "$(uname -m)" == "armv7l" ]]; then
     exit 0
 fi
 
-# Use provided cert if exists
-if [[ -f /certs/fullchain.pem ]] && [[ -f /certs/privkey.pem ]]; then
-    openssl pkcs12 -export \
-      -inkey /certs/privkey.pem \
-      -in /certs/fullchain.pem \
-      -out /tmp/cert.p12 \
-      -name unifi \
-      -password pass:temppass
-
-    keytool -importkeystore \
-      -deststorepass aircontrolenterprise \
-      -destkeypass aircontrolenterprise \
-      -destkeystore /config/data/keystore \
-      -srckeystore /tmp/cert.p12 \
-      -srcstoretype PKCS12 \
-      -srcstorepass temppass \
-      -alias unifi \
-      -noprompt
-fi
-
 # generate key
 [[ ! -f /config/data/keystore ]] && \
     keytool -genkey -keyalg RSA -alias unifi -keystore /config/data/keystore \
